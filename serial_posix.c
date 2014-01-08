@@ -116,7 +116,7 @@ int ser_setup( ser_handler id, u32 baud, int databits, int parity, int stopbits 
     termdata.c_iflag |= ( INPCK | ISTRIP );
 
   // Setup timeouts
-  termdata.c_cc[ VMIN ] = 1;
+  termdata.c_cc[ VMIN ]  = 1;
   termdata.c_cc[ VTIME ] = 0;
 
   // Set the attibutes now
@@ -127,6 +127,8 @@ int ser_setup( ser_handler id, u32 baud, int databits, int parity, int stopbits 
 
   // And set blocking mode by default
   fcntl( id, F_SETFL, 0 );
+
+  return 0;
 }
 
 // Read up to the specified number of bytes, return bytes actually read

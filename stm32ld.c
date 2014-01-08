@@ -5,7 +5,7 @@
 #include "type.h"
 #include "stm32ld.h"
 
-static ser_handler stm32_ser_id = ( ser_handler )-1;
+ser_handler stm32_ser_id = ( ser_handler )-1;
 
 #define STM32_RETRY_COUNT             10
 

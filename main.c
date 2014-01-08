@@ -6,6 +6,7 @@
 #include <string.h>
 #include <errno.h>
 #include <limits.h>
+#include "main_OpenCM.h"
 
 static FILE *fp;
 static u32 fpsize;
@@ -56,6 +57,9 @@ int main( int argc, const char **argv )
   u16 version;
   long baud;
  
+
+  printf("stm32ld ver 1.0.0\n");
+
   // Argument validation
   if( argc < 4 )
   {
@@ -63,6 +67,7 @@ int main( int argc, const char **argv )
     fprintf( stderr, "Note: Thanks to Go command you don't need to change status of BOOT0 after flashing,\n\t\ttake care after power cycle ...\n\n\n" );
     exit( 1 );
   }
+
   errno = 0;
   baud = strtol( argv[ 2 ], NULL, 10 );
   if( ( errno == ERANGE && ( baud == LONG_MAX || baud == LONG_MIN ) ) || ( errno != 0 && baud == 0 ) || ( baud < 0 ) ) 
@@ -78,7 +83,7 @@ int main( int argc, const char **argv )
 
   if( argc >= 5 && strlen(argv[ 4 ])==1 && strncmp(argv[ 4 ], "2", 1)==0 )
   {
-    boot_mode=1;
+    boot_mode      =1;
     send_go_command=1;
   }
 
@@ -89,6 +94,13 @@ int main( int argc, const char **argv )
     return 0;
   }
 
+
+
+  if( argc >= 6 && strncmp(argv[ 5 ], "opencm", 5)==0 )
+  {
+    OpenCM_main( argc, argv );
+    return 0;
+  }
 
 
   if( strlen(argv[ 3 ])==1 && strncmp(argv[ 3 ], "0", 1)==0 )
