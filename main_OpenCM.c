@@ -61,9 +61,12 @@ static void OpenCM_writeh_progress( u32 wrote )
 
 
 
-// ****************************************************************************
-// Entry point
-
+/*---------------------------------------------------------------------------
+     TITLE   : OpenCM_main
+     WORK    :
+     ARG     : void
+     RET     : void
+---------------------------------------------------------------------------*/
 int OpenCM_main( int argc, const char **argv )
 {
 	u8 not_flashing=0;
