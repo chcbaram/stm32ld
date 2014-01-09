@@ -97,7 +97,7 @@ int OpenCM_main( int argc, const char **argv )
 		fseek( OpenCM_fp, 0, SEEK_SET );
 	}
   
-	printf("OpenCM Download\n");
+	printf("OpenCM Download Ver 1.0.0 \n");
 
 
 	while(1)
@@ -143,6 +143,10 @@ int OpenCM_main( int argc, const char **argv )
 			}
 
   		}
+  		else
+  		{
+  			fprintf( stderr, "Fail to be ready.\n" );
+  		}
 
 
 		break;
@@ -164,7 +168,11 @@ int OpenCM_main( int argc, const char **argv )
 ---------------------------------------------------------------------------*/
 void OpenCM_Wait_ms( int WaitTime )
 {
+	#ifdef WIN32_BUILD
+	Sleep(WaitTime);
+	#else
 	usleep(WaitTime*1000);
+	#endif
 }
 
 
@@ -336,8 +344,11 @@ int OpenCM_Cmd_Init( const char *portname, u32 baud )
 
 	// Open port
 	if( ( stm32_ser_id = ser_open( portname ) ) == ( ser_handler )-1 )
-	return STM32_PORT_OPEN_ERROR;
-
+	{
+		printf("Fail to open port 1\n");
+		return STM32_PORT_OPEN_ERROR;
+	}
+	
 	// Setup port
 	ser_setup( stm32_ser_id, baud, SER_DATABITS_8, SER_PARITY_NONE, SER_STOPBITS_1 );
 
@@ -353,9 +364,14 @@ int OpenCM_Cmd_Init( const char *portname, u32 baud )
 	OpenCM_Cmd_SendCommand("CM9X");
 	OpenCM_Wait_ms(500);
 
+	ser_close( stm32_ser_id );
+
 	// Open port
 	if( ( stm32_ser_id = ser_open( portname ) ) == ( ser_handler )-1 )
-	return STM32_PORT_OPEN_ERROR;
+	{
+		printf("Fail to open port 2\n");
+		return STM32_PORT_OPEN_ERROR;
+	}
 
 	// Setup port
 	ser_setup( stm32_ser_id, baud, SER_DATABITS_8, SER_PARITY_NONE, SER_STOPBITS_1 );
@@ -383,48 +399,46 @@ int OpenCM_Cmd_Init( const char *portname, u32 baud )
 int OpenCM_WriteFlash( p_read_data read_data_func, p_progress progress_func )
 {
  
-  u32 wrote = 0;
-  u8  data[ OPENCM_WRITE_BUFSIZE + 1 ];
-  u32 datalen;
-  u8  CheckSum = 0;
-  int i;
+	u32 wrote = 0;
+	u8  data[ OPENCM_WRITE_BUFSIZE + 1 ];
+	u32 datalen;
+	u8  CheckSum = 0;
+	int i;
 
-  printf("Flash : ");
-  while( 1 )
-  {
-    // Read data to program
-    if( ( datalen = read_data_func( data, OPENCM_WRITE_BUFSIZE ) ) == 0 )
-      break;
-
-	for( i=0; i<datalen; i++ )
+	printf("Flash : ");
+	
+	while( 1 )
 	{
-		CheckSum += data[i];
-	}  	
+		// Read data to program
+		if( ( datalen = read_data_func( data, OPENCM_WRITE_BUFSIZE ) ) == 0 )
+		{
+      		break;
+      	}
 
-    //data[ 0 ] = ( u8 )( datalen - 1 );
-
-    // Send data
-    //stm32h_send_packet_with_checksum( data, datalen + 1 );
-    //STM32_EXPECT( STM32_COMM_ACK );
-
-    // Call progress function (if provided)
-
-  	OpenCM_Cmd_WriteBytes( data, datalen );
-
-
-    wrote += datalen;
-    if( progress_func )
-    {
-      progress_func( wrote );
-    }
-  }
+		for( i=0; i<datalen; i++ )
+		{
+			CheckSum += data[i];
+		}  	
+	
+	
+		//-- 데이터 전송
+		//
+	  	OpenCM_Cmd_WriteBytes( data, datalen );
+	
+	
+	    wrote += datalen;
+	    if( progress_func )
+	    {
+	      progress_func( wrote );
+	    }
+	}
 
   	data[0] = CheckSum;  	
 
 	OpenCM_Cmd_WriteBytes( data, 1 );
 
 	printf("\nWrite Size : %d\n", wrote);
-  return TRUE;
+	return TRUE;
 }
 
 
