@@ -63,7 +63,7 @@ int main( int argc, const char **argv )
   // Argument validation
   if( argc < 4 )
   {
-    fprintf( stderr, "Usage: stm32ld <port> <baud> <binary image name|0 to not flash> [<0|1 to send Go command to new flashed app>]\n" );
+    fprintf( stderr, "Usage: stm32ld <port> <baud> <binary image name|0 to not flash> [<0|1 to send Go command to new flashed app>] [opencm]\n" );
     fprintf( stderr, "Note: Thanks to Go command you don't need to change status of BOOT0 after flashing,\n\t\ttake care after power cycle ...\n\n\n" );
     exit( 1 );
   }

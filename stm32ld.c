@@ -48,14 +48,16 @@ static int stm32h_send_packet_with_checksum( u8 *packet, u32 len )
   for( i = 0; i < len; i ++ )
     chksum ^= packet[ i ];
 
-  //ser_write( stm32_ser_id, packet, len );
+  ser_write( stm32_ser_id, packet, len );
+  /*
   for( i=0; i<len; i++ )
   {
     ser_write_byte( stm32_ser_id, packet[i] );    
     //usleep(1000);
     //printf("%d %x\r\n", i, packet[i]);
   }
-
+  */
+  
   ser_write_byte( stm32_ser_id, chksum );
   return STM32_OK;
 }
