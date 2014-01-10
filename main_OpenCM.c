@@ -114,7 +114,7 @@ int OpenCM_main( int argc, const char **argv )
   		if( OpenCM_Cmd_SendCmdRecvResponse("AT&LD", RecvStr, 500 ) == TRUE )
   		{
   			printf("Ready To download \n");
-
+  			OpenCM_Wait_ms(5);
 
   			if( OpenCM_WriteFlash( OpenCM_writeh_read_data, OpenCM_writeh_progress ) != TRUE )
     		{
@@ -362,7 +362,7 @@ int OpenCM_Cmd_Init( const char *portname, u32 baud )
 	//-- Boart Reset
 	//
 	OpenCM_Cmd_SendCommand("CM9X");
-	OpenCM_Wait_ms(500);
+	OpenCM_Wait_ms(1000);
 
 	ser_close( stm32_ser_id );
 
@@ -375,6 +375,12 @@ int OpenCM_Cmd_Init( const char *portname, u32 baud )
 
 	// Setup port
 	ser_setup( stm32_ser_id, baud, SER_DATABITS_8, SER_PARITY_NONE, SER_STOPBITS_1 );
+
+
+	// Flush all incoming data
+	ser_set_timeout_ms( stm32_ser_id, SER_NO_TIMEOUT );
+	while( OpenCM_Cmd_ReadByte() != -1 );
+	ser_set_timeout_ms( stm32_ser_id, STM32_COMM_TIMEOUT );
 
 
 	//-- 보드 연결 확인
@@ -394,7 +400,7 @@ int OpenCM_Cmd_Init( const char *portname, u32 baud )
 }           
 
 
-#define OPENCM_WRITE_BUFSIZE  512
+#define OPENCM_WRITE_BUFSIZE  1024
 
 int OpenCM_WriteFlash( p_read_data read_data_func, p_progress progress_func )
 {
@@ -425,7 +431,7 @@ int OpenCM_WriteFlash( p_read_data read_data_func, p_progress progress_func )
 		//
 	  	OpenCM_Cmd_WriteBytes( data, datalen );
 	
-	
+
 	    wrote += datalen;
 	    if( progress_func )
 	    {
@@ -436,6 +442,7 @@ int OpenCM_WriteFlash( p_read_data read_data_func, p_progress progress_func )
   	data[0] = CheckSum;  	
 
 	OpenCM_Cmd_WriteBytes( data, 1 );
+
 
 	printf("\nWrite Size : %d\n", wrote);
 	return TRUE;
