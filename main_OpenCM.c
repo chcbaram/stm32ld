@@ -47,10 +47,12 @@ static u32 OpenCM_writeh_read_data( u8 *dst, u32 len )
 }
 
 // Progress function
+int expected_next = 10;
+  
 static void OpenCM_writeh_progress( u32 wrote )
 {
   unsigned pwrite = ( wrote * 100 ) / OpenCM_fpsize;
-  static int expected_next = 10;
+
 
   if( pwrite >= expected_next )
   {
@@ -74,7 +76,7 @@ int OpenCM_main( int argc, const char **argv )
 	u8 boot_mode = 0;
 	long baud;
 	char RecvStr[100];	 
-
+	int i;
 	errno = 0;
 	baud = strtol( argv[ 2 ], NULL, 10 );
 	
@@ -110,44 +112,54 @@ int OpenCM_main( int argc, const char **argv )
     		break;;
   		}
 
-
-  		if( OpenCM_Cmd_SendCmdRecvResponse("AT&LD", RecvStr, 500 ) == TRUE )
-  		{
-  			printf("Ready To download \n");
-  			OpenCM_Wait_ms(5);
-
-  			if( OpenCM_WriteFlash( OpenCM_writeh_read_data, OpenCM_writeh_progress ) != TRUE )
-    		{
-				fprintf( stderr, "Unable to program FLASH memory.\n" );
-				exit( 1 );
-			}
-			else
-			{
-				printf("\nFlash OK\n");
-				OpenCM_Wait_ms(50);
-
-				RecvStr[0] = 0;
-				OpenCM_Cmd_ReadResponse( RecvStr, 500 );
-				printf("CheckSum : %s\n", RecvStr);
-
-				if( strncmp(RecvStr, "Success", 7) == 0 )
+		for( i=0; i<3; i++ )
+		{
+	  		if( OpenCM_Cmd_SendCmdRecvResponse("AT&LD", RecvStr, 500 ) == TRUE )
+	  		{
+	  			printf("Ready To download \n");
+	  			OpenCM_Wait_ms(5);
+	
+	  			if( OpenCM_WriteFlash( OpenCM_writeh_read_data, OpenCM_writeh_progress ) != TRUE )
+	    		{
+					fprintf( stderr, "Unable to program FLASH memory.\n" );
+					exit( 1 );
+				}
+				else
 				{
-					if( send_go_command == 1 )
+					//printf("\nFlash OK\n");
+					OpenCM_Wait_ms(50);
+	
+					RecvStr[0] = 0;
+					OpenCM_Cmd_ReadResponse( RecvStr, 500 );
+					printf("CheckSum : %s\n", RecvStr);
+	
+					if( strncmp(RecvStr, "Success", 7) == 0 )
+					{
+						if( send_go_command == 1 )
+						{
+							OpenCM_Wait_ms(200);
+							printf("Go Application\n");
+							OpenCM_Cmd_SendCommand("AT&GO");
+						}
+						
+						break;
+					}
+					else
 					{
 						OpenCM_Wait_ms(200);
-						printf("Go Application\n");
-						OpenCM_Cmd_SendCommand("AT&GO");
+						fseek( OpenCM_fp, 0, SEEK_SET );
+						expected_next = 10;
 					}
+	
 				}
-
-			}
-
-  		}
-  		else
-  		{
-  			fprintf( stderr, "Fail to be ready.\n" );
-  		}
-
+	
+	  		}
+	  		else
+	  		{
+	  			fprintf( stderr, "Fail to be ready.\n" );
+	  			break;
+	  		}
+		}
 
 		break;
 	}
@@ -350,8 +362,22 @@ int OpenCM_Cmd_Init( const char *portname, u32 baud )
 	}
 	
 	// Setup port
-	ser_setup( stm32_ser_id, baud, SER_DATABITS_8, SER_PARITY_NONE, SER_STOPBITS_1 );
+	ser_setupEx( stm32_ser_id, baud, SER_DATABITS_8, SER_PARITY_NONE, SER_STOPBITS_1, 1 );
 
+	ser_close( stm32_ser_id );
+	
+	// Open port
+	if( ( stm32_ser_id = ser_open( portname ) ) == ( ser_handler )-1 )
+	{
+		printf("Fail to open port 1\n");
+		return STM32_PORT_OPEN_ERROR;
+	}
+	
+	// Setup port
+	ser_setupEx( stm32_ser_id, baud, SER_DATABITS_8, SER_PARITY_NONE, SER_STOPBITS_1, 1 );
+
+
+	
 
 	// Flush all incoming data
 	ser_set_timeout_ms( stm32_ser_id, SER_NO_TIMEOUT );
@@ -359,12 +385,15 @@ int OpenCM_Cmd_Init( const char *portname, u32 baud )
 	ser_set_timeout_ms( stm32_ser_id, STM32_COMM_TIMEOUT );
 
 
+
 	//-- Boart Reset
 	//
+	OpenCM_Wait_ms(100);
 	OpenCM_Cmd_SendCommand("CM9X");
-	OpenCM_Wait_ms(1000);
 
 	ser_close( stm32_ser_id );
+
+	OpenCM_Wait_ms(1000);
 
 	// Open port
 	if( ( stm32_ser_id = ser_open( portname ) ) == ( ser_handler )-1 )
@@ -394,7 +423,6 @@ int OpenCM_Cmd_Init( const char *portname, u32 baud )
 		printf("Fail to connect OpenCM\n");
 		return FALSE;
 	}
-
 
 	return TRUE;
 }           

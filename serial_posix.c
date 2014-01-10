@@ -131,6 +131,86 @@ int ser_setup( ser_handler id, u32 baud, int databits, int parity, int stopbits 
   return 0;
 }
 
+
+int ser_setupEx( ser_handler id, u32 baud, int databits, int parity, int stopbits, int Mode )
+{
+  struct termios termdata;
+  int hnd = ( int )id;
+
+  usleep( 200000 );
+  tcgetattr( hnd, &termdata );
+
+  // Baud rate
+  cfsetispeed( &termdata, ser_baud_to_id( baud ) );
+  cfsetospeed( &termdata, ser_baud_to_id( baud ) );
+
+  // Parity / stop bits
+  termdata.c_cflag &= ~CSTOPB;
+  if( parity == SER_PARITY_NONE ) // no parity
+  {
+    termdata.c_cflag &= ~PARENB;
+  }
+  else if( parity == SER_PARITY_EVEN ) // even parity
+  {
+    termdata.c_cflag |= PARENB;
+    termdata.c_cflag &= ~PARODD;
+  }
+  else if( parity == SER_PARITY_ODD ) // odd parity
+  {
+    termdata.c_cflag |= PARENB;
+    termdata.c_cflag |= PARODD;
+  }
+
+   // Data bits
+  termdata.c_cflag |= ( CLOCAL | CREAD );
+  termdata.c_cflag &= ~CSIZE;
+  termdata.c_cflag |= ser_number_of_bits_to_id( databits );
+
+
+
+  // Disable HW and SW flow control
+  termdata.c_cflag &= ~CRTSCTS;
+  termdata.c_iflag &= ~( IXON | IXOFF | IXANY );
+
+
+  if( Mode == 0 )
+    termdata.c_cflag &= ~CRTSCTS;
+  else
+    termdata.c_cflag |= CRTSCTS;    /* Also called CRTSCTS */
+
+    
+
+  // Raw input
+  termdata.c_lflag &= ~( ICANON | ECHO | ECHOE | ISIG );
+
+  // Raw output
+  termdata.c_oflag &= ~OPOST;
+
+
+  // Check and strip parity bit
+  if( parity == SER_PARITY_NONE )
+    termdata.c_iflag &= ~( INPCK | ISTRIP );
+  else
+    termdata.c_iflag |= ( INPCK | ISTRIP );
+
+  // Setup timeouts
+  termdata.c_cc[ VMIN ]  = 1;
+  termdata.c_cc[ VTIME ] = 0;
+
+  // Set the attibutes now
+  tcsetattr( hnd, TCSANOW, &termdata );
+
+  // Flush everything
+  tcflush( hnd, TCIOFLUSH );
+
+  // And set blocking mode by default
+  fcntl( id, F_SETFL, 0 );
+
+  return 0;
+}
+
+
+
 // Read up to the specified number of bytes, return bytes actually read
 u32 ser_read( ser_handler id, u8* dest, u32 maxsize )
 {

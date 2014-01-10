@@ -99,6 +99,57 @@ int ser_setup( ser_handler id, u32 baud, int databits, int parity, int stopbits 
   return SER_OK;
 }
 
+
+int ser_setupEx( ser_handler id, u32 baud, int databits, int parity, int stopbits, int Mode )
+{
+  HANDLE hComm = ( HANDLE )id;
+  DCB dcb;
+  
+  if( GetCommState( hComm, &dcb ) == FALSE )
+  {
+    CloseHandle( hComm );
+    return SER_ERR;
+  }
+  dcb.BaudRate = baud;
+  dcb.ByteSize = databits;
+  dcb.Parity = parity == SER_PARITY_NONE ? NOPARITY : ( parity == SER_PARITY_EVEN ? EVENPARITY : ODDPARITY );
+  dcb.StopBits = stopbits == SER_STOPBITS_1 ? ONESTOPBIT : ( stopbits == SER_STOPBITS_1_5 ? ONE5STOPBITS : TWOSTOPBITS );
+  dcb.fBinary = TRUE;
+  dcb.fDsrSensitivity = FALSE;
+  dcb.fParity = parity != SER_PARITY_NONE ? TRUE : FALSE;
+  dcb.fOutX = FALSE;
+  dcb.fInX = FALSE;
+  dcb.fNull = FALSE;
+  /**/ dcb.fAbortOnError = FALSE;
+  dcb.fOutxCtsFlow = FALSE;
+  dcb.fOutxDsrFlow = FALSE;
+  dcb.fDtrControl = DTR_CONTROL_DISABLE;
+  dcb.fDsrSensitivity = FALSE;
+  
+  if( Mode == 0 )
+    dcb.fRtsControl = RTS_CONTROL_DISABLE;
+  else
+    dcb.fRtsControl = RTS_CONTROL_ENABLE;
+    
+  dcb.fOutxCtsFlow = FALSE;
+  if( SetCommState( hComm, &dcb ) == 0 )
+  {
+    CloseHandle( hComm );
+    return SER_ERR;
+  }
+  
+  if( ser_win32_set_timeouts( hComm, 0, 0, 0, 0, 0 ) == SER_ERR )
+  {
+    CloseHandle( hComm );
+    return SER_ERR;
+  }
+  
+  FlushFileBuffers( hComm );
+
+  return SER_OK;
+}
+
+
 // Read up to the specified number of bytes, return bytes actually read
 u32 ser_read( ser_handler id, u8* dest, u32 maxsize )
 {
