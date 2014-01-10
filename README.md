@@ -13,10 +13,14 @@ Compile - Windows
 gcc -o stm32ld main.c stm32ld.c main_OpenCM.c serial_win32.c  -DWIN32_BUILD
 
 
-Execute
+
+Execute 
+
 stm32ld /dev/tty 115200 main.bin 1 
 
+
 Execute OpenCM
+
 stm32ld /dev/tty 115200 main.bin 1 opencm
 
 
