@@ -99,7 +99,7 @@ int OpenCM_main( int argc, const char **argv )
 		fseek( OpenCM_fp, 0, SEEK_SET );
 	}
   
-	printf("OpenCM Download Ver 1.0.0 \n");
+	printf("OpenCM Download Ver 1.0.1 \n");
 
 
 	while(1)
@@ -112,7 +112,7 @@ int OpenCM_main( int argc, const char **argv )
     		break;;
   		}
 
-		for( i=0; i<3; i++ )
+		for( i=0; i<5; i++ )
 		{
 	  		if( OpenCM_Cmd_SendCmdRecvResponse("AT&LD", RecvStr, 500 ) == TRUE )
 	  		{
@@ -353,6 +353,7 @@ int OpenCM_Cmd_SendCmdRecvResponse( char *CmdStr, char *RecvStr, int TimeOut )
 int OpenCM_Cmd_Init( const char *portname, u32 baud )
 {
 	char buf[100];
+	int  i;
 
 	// Open port
 	if( ( stm32_ser_id = ser_open( portname ) ) == ( ser_handler )-1 )
@@ -395,12 +396,21 @@ int OpenCM_Cmd_Init( const char *portname, u32 baud )
 
 	OpenCM_Wait_ms(1000);
 
-	// Open port
-	if( ( stm32_ser_id = ser_open( portname ) ) == ( ser_handler )-1 )
+	for( i=0; i<3; i++ )
 	{
-		printf("Fail to open port 2\n");
-		return STM32_PORT_OPEN_ERROR;
+		// Open port
+		if( ( stm32_ser_id = ser_open( portname ) ) == ( ser_handler )-1 )
+		{
+			printf("Fail to open port 2\n");
+
+			if( i == 2 )
+			{
+				return STM32_PORT_OPEN_ERROR;
+			}
+			OpenCM_Wait_ms(500);
+		}
 	}
+
 
 	// Setup port
 	ser_setup( stm32_ser_id, baud, SER_DATABITS_8, SER_PARITY_NONE, SER_STOPBITS_1 );
