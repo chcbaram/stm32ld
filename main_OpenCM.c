@@ -409,6 +409,10 @@ int OpenCM_Cmd_Init( const char *portname, u32 baud )
 			}
 			OpenCM_Wait_ms(500);
 		}
+		else
+		{
+			break;
+		}
 	}
 
 
