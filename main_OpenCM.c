@@ -99,7 +99,7 @@ int OpenCM_main( int argc, const char **argv )
 		fseek( OpenCM_fp, 0, SEEK_SET );
 	}
   
-	printf("OpenCM Download Ver 1.0.1 \n");
+	printf("OpenCM Download Ver 1.0.2 2014.04.09 \n");
 
 
 	while(1)
@@ -114,7 +114,7 @@ int OpenCM_main( int argc, const char **argv )
 
 		for( i=0; i<5; i++ )
 		{
-	  		if( OpenCM_Cmd_SendCmdRecvResponse("AT&LD", RecvStr, 500 ) == TRUE )
+	  		if( OpenCM_Cmd_SendCmdRecvResponse("AT&LD", RecvStr, 5000 ) == TRUE )
 	  		{
 	  			printf("Ready To download \n");
 	  			OpenCM_Wait_ms(5);
@@ -180,10 +180,17 @@ int OpenCM_main( int argc, const char **argv )
 ---------------------------------------------------------------------------*/
 void OpenCM_Wait_ms( int WaitTime )
 {
+	int i;
+
 	#ifdef WIN32_BUILD
 	Sleep(WaitTime);
 	#else
-	usleep(WaitTime*1000);
+	//usleep(WaitTime*1000);
+	
+	for( i=0; i<WaitTime; i++ )
+	{
+		usleep(1000);	
+	}
 	#endif
 }
 
@@ -428,7 +435,7 @@ int OpenCM_Cmd_Init( const char *portname, u32 baud )
 
 	//-- 보드 연결 확인
 	//
-	if( OpenCM_Cmd_SendCmdRecvResponse("AT&NAME\n", buf, 500) == TRUE )
+	if( OpenCM_Cmd_SendCmdRecvResponse("AT&NAME\n", buf, 2500) == TRUE )
 	{
 		printf("Board Name : %s\n", buf);
 	}
@@ -437,6 +444,8 @@ int OpenCM_Cmd_Init( const char *portname, u32 baud )
 		printf("Fail to connect OpenCM\n");
 		return FALSE;
 	}
+
+	ser_set_timeout_ms( stm32_ser_id, STM32_COMM_TIMEOUT*2 );
 
 	return TRUE;
 }           
@@ -473,6 +482,7 @@ int OpenCM_WriteFlash( p_read_data read_data_func, p_progress progress_func )
 		//
 	  	OpenCM_Cmd_WriteBytes( data, datalen );
 	
+		//OpenCM_Wait_ms(10);
 
 	    wrote += datalen;
 	    if( progress_func )
@@ -484,7 +494,7 @@ int OpenCM_WriteFlash( p_read_data read_data_func, p_progress progress_func )
   	data[0] = CheckSum;  	
 
 	OpenCM_Cmd_WriteBytes( data, 1 );
-
+	OpenCM_Wait_ms(100);
 
 	printf("\nWrite Size : %d\n", wrote);
 	return TRUE;
