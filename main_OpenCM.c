@@ -99,7 +99,14 @@ int OpenCM_main( int argc, const char **argv )
 		fseek( OpenCM_fp, 0, SEEK_SET );
 	}
   
-	printf("OpenCM Download Ver 1.0.2 2014.04.09 \n");
+	if( strncmp(argv[ 5 ], "cupdrone", 8)==0 )
+	{
+		printf("CupDrone Download Ver 1.0.2 2015.10.02 \n");
+	}
+	else
+	{
+		printf("OpenCM Download Ver 1.0.2 2014.04.09 \n");
+	}
 
 
 	while(1)
