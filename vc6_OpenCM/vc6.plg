@@ -1,0 +1,51 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: vc6 - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\Users\Baram\AppData\Local\Temp\RSP8641.tmp" with contents
+[
+/nologo /ML /W3 /GX /O2 /I "..\\" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D "WIN32_BUILD" /Fp"Release/vc6.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\D\git\stm32ld\main.c"
+"C:\D\git\stm32ld\main_OpenCM.c"
+"C:\D\git\stm32ld\serial_win32.c"
+"C:\D\git\stm32ld\stm32ld.c"
+]
+Creating command line "cl.exe @C:\Users\Baram\AppData\Local\Temp\RSP8641.tmp" 
+Creating temporary file "C:\Users\Baram\AppData\Local\Temp\RSP8642.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /pdb:"Release/OpenCM904ld.pdb" /machine:I386 /out:"Release/OpenCM904ld.exe" 
+.\Release\main.obj
+.\Release\main_OpenCM.obj
+.\Release\serial_win32.obj
+.\Release\stm32ld.obj
+]
+Creating command line "link.exe @C:\Users\Baram\AppData\Local\Temp\RSP8642.tmp"
+<h3>Output Window</h3>
+Compiling...
+main.c
+C:\D\git\stm32ld\main.c(41) : warning C4018: '>=' : signed/unsigned mismatch
+C:\D\git\stm32ld\main.c(151) : warning C4013: 'stm32_get_version' undefined; assuming extern returning int
+C:\D\git\stm32ld\main.c(208) : warning C4013: 'stm32_extended_erase_flash' undefined; assuming extern returning int
+main_OpenCM.c
+C:\D\git\stm32ld\main_OpenCM.c(57) : warning C4018: '>=' : signed/unsigned mismatch
+C:\D\git\stm32ld\main_OpenCM.c(190) : warning C4101: 'i' : unreferenced local variable
+C:\D\git\stm32ld\main_OpenCM.c(291) : warning C4101: 'TimeCnt' : unreferenced local variable
+C:\D\git\stm32ld\main_OpenCM.c(482) : warning C4018: '<' : signed/unsigned mismatch
+serial_win32.c
+stm32ld.c
+C:\D\git\stm32ld\stm32ld.c(136) : warning C4101: 'temp' : unreferenced local variable
+C:\D\git\stm32ld\stm32ld.c(33) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\D\git\stm32ld\stm32ld.c(34) : warning C4716: 'stm32h_send_command' : must return a value
+Linking...
+
+
+
+<h3>Results</h3>
+OpenCM904ld.exe - 0 error(s), 10 warning(s)
+</pre>
+</body>
+</html>

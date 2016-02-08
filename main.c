@@ -58,7 +58,7 @@ int main( int argc, const char **argv )
   long baud;
  
 
-  printf("stm32ld ver 1.0.1\n");
+  printf("stm32ld ver 1.0.2\n");
 
   // Argument validation
   if( argc < 4 )
