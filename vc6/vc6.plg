@@ -1,0 +1,39 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: vc6 - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\Users\Baram\AppData\Local\Temp\RSP7821.tmp" with contents
+[
+/nologo /ML /W3 /GX /O2 /I "..\\" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D "WIN32_BUILD" /Fp"Release/vc6.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\D\git\stm32ld\main_OpenCM.c"
+]
+Creating command line "cl.exe @C:\Users\Baram\AppData\Local\Temp\RSP7821.tmp" 
+Creating temporary file "C:\Users\Baram\AppData\Local\Temp\RSP7822.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib  kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /pdb:"Release/stm32ld_cupdrone.pdb" /machine:I386 /out:"Release/stm32ld_cupdrone.exe" 
+.\Release\stm32ld.obj
+.\Release\main.obj
+.\Release\main_OpenCM.obj
+.\Release\serial_win32.obj
+]
+Creating command line "link.exe @C:\Users\Baram\AppData\Local\Temp\RSP7822.tmp"
+<h3>Output Window</h3>
+Compiling...
+main_OpenCM.c
+C:\D\git\stm32ld\main_OpenCM.c(57) : warning C4018: '>=' : signed/unsigned mismatch
+C:\D\git\stm32ld\main_OpenCM.c(190) : warning C4101: 'i' : unreferenced local variable
+C:\D\git\stm32ld\main_OpenCM.c(291) : warning C4101: 'TimeCnt' : unreferenced local variable
+C:\D\git\stm32ld\main_OpenCM.c(482) : warning C4018: '<' : signed/unsigned mismatch
+Linking...
+
+
+
+<h3>Results</h3>
+stm32ld_cupdrone.exe - 0 error(s), 4 warning(s)
+</pre>
+</body>
+</html>

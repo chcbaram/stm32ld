@@ -102,6 +102,12 @@ int main( int argc, const char **argv )
     return 0;
   }
 
+  if( argc >= 6 && strncmp(argv[ 5 ], "cupdrone", 8)==0 )
+  {
+    OpenCM_main( argc, argv );
+    return 0;
+  }
+
 
   if( strlen(argv[ 3 ])==1 && strncmp(argv[ 3 ], "0", 1)==0 )
   {
