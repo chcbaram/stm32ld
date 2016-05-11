@@ -105,7 +105,7 @@ int OpenCM_main( int argc, const char **argv )
 	}
 	else
 	{
-		printf("OpenCM Download Ver 1.0.2 2014.04.09 \n");
+		printf("OpenCM Download Ver 1.0.3 2016.04.30 \n");
 	}
 
 
@@ -121,8 +121,14 @@ int OpenCM_main( int argc, const char **argv )
 
 		for( i=0; i<5; i++ )
 		{
-	  		if( OpenCM_Cmd_SendCmdRecvResponse("AT&LD", RecvStr, 5000 ) == TRUE )
+	  		if( OpenCM_Cmd_SendCmdRecvResponse("AT&LD\n", RecvStr, 5000 ) == TRUE )
+	  		//if( OpenCM_Cmd_SendCommand("AT&LD") == STM32_OK )
 	  		{
+
+	  			OpenCM_Cmd_SendCmdRecvResponse("AT&LD\n", RecvStr, 5000 );
+	  			printf("Recv : %s\n", RecvStr);
+
+
 	  			printf("Ready To download \n");
 	  			OpenCM_Wait_ms(5);
 	
@@ -297,7 +303,7 @@ int OpenCM_Cmd_ReadResponse( char *CmdStr, int TimeOut )
 	{
 		Ch = OpenCM_Cmd_ReadByte();
 
-		//printf("Rxd : %x \n", Ch);
+		//printf("Rxd : %x:%c\n", Ch, Ch);
 		if( Ch == -1 )
 		{
 			break;
